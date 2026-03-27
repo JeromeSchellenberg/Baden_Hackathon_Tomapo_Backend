@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import { errorHandler } from "./middlewares/error.middleware.js";
+import authRoutes from "./modules/auth/auth.routes.js";
 
 const app = express();
 
@@ -16,7 +17,7 @@ app.get("/health", (req, res) => {
 });
 
 // Routes
-// .....
+app.use("/api/v1/auth", authRoutes);
 
 // 404 Handler
 app.use((req, res) => {
@@ -27,7 +28,7 @@ app.use((req, res) => {
   });
 });
 
-// Global Error Handler
+// Global Error Handler — muss als letztes stehen
 app.use(errorHandler);
 
 export default app;

@@ -1,4 +1,4 @@
-import { AppError } from "../utils/appError";
+import { AppError } from "../utils/appError.util.js";
 
 function handleMongooseCastError(err) {
   return new AppError(`Invalid value for field "${err.path}": ${err.value}`, 400);
