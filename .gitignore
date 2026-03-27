@@ -18,9 +18,9 @@ pids/
 coverage/
 
 # Environment variables
-.env
-.env.*
-!.env.example
+#.env
+#.env.*
+#!.env.example
 
 # MongoDB (lokale Datenbankfiles, falls vorhanden)
 data/
