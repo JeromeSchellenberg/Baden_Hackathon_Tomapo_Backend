@@ -6,6 +6,7 @@ import authRoutes    from "./modules/auth/auth.routes.js";
 import productRoutes from "./modules/product/product.routes.js";
 import traceRoutes   from "./modules/trace/trace.routes.js";
 import scanHistoryRoutes from "./modules/scanHistory/scanHistory.routes.js";
+import alertRoutes from "./modules/alert/alert.routes.js";
 
 const app = express();
 
@@ -19,7 +20,7 @@ app.use("/api/v1/auth",     authRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/traces",   traceRoutes);
 app.use("/api/v1/scan-history", scanHistoryRoutes);
-
+app.use("/api/v1/alerts", alertRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
