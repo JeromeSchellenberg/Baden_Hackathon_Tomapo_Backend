@@ -89,10 +89,10 @@ export const getAlertById = async (id) => {
 };
 
 // GET all retailer alerts (source === "retailer")
-export const getRetailerAlerts = async (options = {}) => {
+export const getOfficialAlerts = async (options = {}) => {
   const { includeExpired = false } = options;
 
-  const query = { source: "retailer" };
+  const query = { source: "official" };
   const finalQuery = includeExpired ? query : buildActiveQuery(query);
 
   return Alert.find(finalQuery)

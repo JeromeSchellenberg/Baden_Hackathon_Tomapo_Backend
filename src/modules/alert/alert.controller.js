@@ -37,14 +37,14 @@ export const getAlertById = asyncHandler(async (req, res) => {
 });
 
 // GET /api/v1/alerts/source/retailer
-export const getRetailerAlerts = asyncHandler(async (req, res) => {
-  const alerts = await AlertService.getRetailerAlerts({
+export const getOfficialAlerts = asyncHandler(async (req, res) => {
+  const alerts = await AlertService.getOfficialAlerts({
     includeExpired: req.query.includeExpired === "true",
   });
   sendSuccess(res, alerts);
 });
 
-// GET /api/v1/alerts/source/community
+// GET /api/v1/official/source/community
 export const getCommunityAlerts = asyncHandler(async (req, res) => {
   const alerts = await AlertService.getCommunityAlerts({
     includeExpired: req.query.includeExpired === "true",
