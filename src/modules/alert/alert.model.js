@@ -11,7 +11,6 @@ const alertSchema = new mongoose.Schema(
   {
     barcode: {
       type: String,
-      required: true,
       index: true,
       trim: true,
     },
@@ -23,18 +22,15 @@ const alertSchema = new mongoose.Schema(
     },
     source: {
       type: String,
-      required: true,
       enum: ALERT_SOURCES,
       trim: true,
     },
     category: {
       type: String,
-      required: true,
       trim: true,
     },
     severity: {
       type: String,
-      required: true,
       enum: ALERT_SEVERITIES,
       trim: true,
     },
