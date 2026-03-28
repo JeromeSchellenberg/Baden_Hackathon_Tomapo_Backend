@@ -1,0 +1,1205 @@
+openapi: 3.0.3
+info:
+  title: Tomapo API
+  version: 1.0.0
+  description: Tomapo Backend API — Authentifizierung, Traces, Alerts, Produkte, User,
+    Retailer, Intelligence
+servers:
+- url: http://localhost:3000/api/v1
+  description: Local Development
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+        data:
+          type: object
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        status:
+          type: integer
+        message:
+          type: string
+    UserRegisterRequest:
+      type: object
+      required:
+      - fullName
+      - email
+      - nickname
+      - password
+      properties:
+        fullName:
+          type: string
+          example: Max Muster
+        email:
+          type: string
+          format: email
+          example: max@example.com
+        nickname:
+          type: string
+          example: maxm
+        password:
+          type: string
+          format: password
+          example: Test1234!
+    LoginRequest:
+      type: object
+      required:
+      - email
+      - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+    RetailerRegisterRequest:
+      type: object
+      required:
+      - companyName
+      - email
+      - password
+      properties:
+        companyName:
+          type: string
+          example: Migros AG
+        email:
+          type: string
+          format: email
+          example: info@migros.ch
+        password:
+          type: string
+          format: password
+        logoUrl:
+          type: string
+          nullable: true
+    RefreshTokenRequest:
+      type: object
+      required:
+      - refreshToken
+      properties:
+        refreshToken:
+          type: string
+    TraceCreateRequest:
+      type: object
+      required:
+      - barcode
+      - requiresColdChain
+      properties:
+        barcode:
+          type: string
+          example: '5449000000996'
+        batchId:
+          type: string
+          nullable: true
+          example: BATCH-001
+        requiresColdChain:
+          type: boolean
+          example: false
+        generatedAt:
+          type: string
+          format: date-time
+        traceabilityScore:
+          type: object
+          properties:
+            completeness:
+              type: number
+              minimum: 0
+              maximum: 1
+            verifiedStations:
+              type: integer
+            unknownStations:
+              type: integer
+            hasGaps:
+              type: boolean
+            isThirdPartyVerified:
+              type: boolean
+            blockchainHash:
+              type: string
+              nullable: true
+        stations:
+          type: array
+          items:
+            type: object
+    AlertCreateRequest:
+      type: object
+      required:
+      - barcode
+      - source
+      - category
+      - severity
+      - title
+      - description
+      - status
+      properties:
+        barcode:
+          type: string
+          example: '5449000000996'
+        batchId:
+          type: string
+          nullable: true
+        source:
+          type: string
+          enum:
+          - official
+          - retailer
+          - community
+        category:
+          type: string
+          enum:
+          - recall
+          - quality
+          - information
+          - safety
+        severity:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+          - critical
+        title:
+          type: string
+        description:
+          type: string
+        actionRequired:
+          type: string
+          nullable: true
+        referenceId:
+          type: string
+          nullable: true
+        moreInfoUrl:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
+          - active
+          - resolved
+          - rejected
+        confirmationCount:
+          type: integer
+          default: 0
+        rejectionCount:
+          type: integer
+          default: 0
+        expiresAt:
+          type: string
+          format: date-time
+          nullable: true
+    ScanHistoryCreateRequest:
+      type: object
+      required:
+      - barcode
+      - barcodeType
+      - productStatus
+      properties:
+        barcode:
+          type: string
+          example: '5449000000996'
+        barcodeType:
+          type: string
+          example: EAN
+        batchId:
+          type: string
+          nullable: true
+        productName:
+          type: string
+          nullable: true
+        brand:
+          type: string
+          nullable: true
+        imageUrl:
+          type: string
+          nullable: true
+        nutriscoreGrade:
+          type: string
+          nullable: true
+        ecoscoreGrade:
+          type: string
+          nullable: true
+        co2KgPerKg:
+          type: number
+          nullable: true
+        productStatus:
+          type: string
+          enum:
+          - ok
+          - recallActive
+          - mhdExpired
+          - mhdSoonExpiring
+          - unknown
+        bestBeforeDate:
+          type: string
+          format: date-time
+          nullable: true
+    UserMessageCreateRequest:
+      type: object
+      required:
+      - category
+      - title
+      - body
+      - severity
+      - productSnapshot
+      properties:
+        category:
+          type: string
+          enum:
+          - recall
+          - quality
+          - information
+          - safety
+        title:
+          type: string
+        body:
+          type: string
+        severity:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+          - critical
+        linkedAlertId:
+          type: string
+          nullable: true
+        productSnapshot:
+          type: object
+          required:
+          - barcode
+          - scannedAt
+          properties:
+            barcode:
+              type: string
+            batchId:
+              type: string
+              nullable: true
+            productName:
+              type: string
+              nullable: true
+            brand:
+              type: string
+              nullable: true
+            quantity:
+              type: string
+              nullable: true
+            imageUrl:
+              type: string
+              nullable: true
+            nutriscoreGrade:
+              type: string
+              nullable: true
+            ecoscoreGrade:
+              type: string
+              nullable: true
+            categoriesTags:
+              type: array
+              items:
+                type: string
+            scannedAt:
+              type: string
+              format: date-time
+            scannedAtStoreName:
+              type: string
+              nullable: true
+    ChatRequest:
+      type: object
+      required:
+      - chatHistory
+      - batchContext
+      properties:
+        batchId:
+          type: string
+          nullable: true
+        chatHistory:
+          type: array
+          items:
+            type: object
+            properties:
+              role:
+                type: string
+                enum:
+                - user
+                - assistant
+              content:
+                type: string
+        batchContext:
+          type: object
+          description: Full /analyze response
+security:
+- bearerAuth: []
+tags:
+- name: Auth
+  description: Authentifizierung — User & Retailer
+- name: Traces
+  description: Lieferketten-Traces
+- name: Alerts
+  description: Produkt-Alerts & Rückrufe
+- name: Products
+  description: OpenFoodFacts Produkt-Cache
+- name: Scan History
+  description: User Scan-Verlauf
+- name: Users
+  description: User-Profil-Management
+- name: User Messages
+  description: Community-Meldungen
+- name: Retailers
+  description: Retailer-Profil-Management
+- name: Intelligence
+  description: ML Anomalie-Erkennung & AI-Chat
+- name: Health
+  description: Health Checks
+paths:
+  /health:
+    get:
+      tags:
+      - Health
+      summary: Backend Health Check
+      security: []
+      responses:
+        '200':
+          description: Service healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+  /auth/user/register:
+    post:
+      tags:
+      - Auth
+      summary: User registrieren
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegisterRequest'
+      responses:
+        '201':
+          description: User erstellt + Tokens
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '409':
+          description: Email oder Nickname bereits vergeben
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/user/login:
+    post:
+      tags:
+      - Auth
+      summary: User einloggen
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login erfolgreich + Tokens
+        '401':
+          description: Ungültige Credentials
+  /auth/retailer/register:
+    post:
+      tags:
+      - Auth
+      summary: Retailer registrieren
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetailerRegisterRequest'
+      responses:
+        '201':
+          description: Retailer erstellt + Tokens
+        '409':
+          description: Email bereits vergeben
+  /auth/retailer/login:
+    post:
+      tags:
+      - Auth
+      summary: Retailer einloggen
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login erfolgreich
+        '401':
+          description: Ungültige Credentials
+  /auth/refresh:
+    post:
+      tags:
+      - Auth
+      summary: Access Token erneuern
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+      responses:
+        '200':
+          description: Neue Tokens
+        '401':
+          description: Ungültiger Refresh Token
+  /auth/logout:
+    post:
+      tags:
+      - Auth
+      summary: Ausloggen (Refresh Token invalidieren)
+      responses:
+        '200':
+          description: Logged out
+        '401':
+          description: Kein Token
+  /traces/{barcode}:
+    get:
+      tags:
+      - Traces
+      summary: Neueste Trace für Barcode
+      parameters:
+      - name: barcode
+        in: path
+        required: true
+        schema:
+          type: string
+        example: '5449000000996'
+      responses:
+        '200':
+          description: Trace Dokument
+        '404':
+          description: Trace nicht gefunden
+  /traces/{barcode}/batch/{batchId}:
+    get:
+      tags:
+      - Traces
+      summary: Trace für spezifischen Barcode + Batch
+      parameters:
+      - name: barcode
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: batchId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Trace Dokument
+        '404':
+          description: Nicht gefunden
+  /traces/{barcode}/history:
+    get:
+      tags:
+      - Traces
+      summary: Alle Trace-Versionen für Barcode (kompakt)
+      parameters:
+      - name: barcode
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Array von Trace-Versionen
+  /traces:
+    post:
+      tags:
+      - Traces
+      summary: Neue Trace erstellen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TraceCreateRequest'
+      responses:
+        '201':
+          description: Trace erstellt
+  /traces/{id}:
+    patch:
+      tags:
+      - Traces
+      summary: Trace aktualisieren
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                requiresColdChain: true
+      responses:
+        '200':
+          description: Trace aktualisiert
+        '404':
+          description: Nicht gefunden
+    delete:
+      tags:
+      - Traces
+      summary: Trace löschen
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Gelöscht
+        '404':
+          description: Nicht gefunden
+  /alerts/{barcode}:
+    get:
+      tags:
+      - Alerts
+      summary: Alle Alerts für Barcode
+      parameters:
+      - name: barcode
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: includeExpired
+        in: query
+        schema:
+          type: boolean
+        description: Abgelaufene einschliessen
+      - name: includeResolved
+        in: query
+        schema:
+          type: boolean
+        description: Aufgelöste einschliessen
+      responses:
+        '200':
+          description: Array von Alerts
+  /alerts/{barcode}/batch/{batchId}:
+    get:
+      tags:
+      - Alerts
+      summary: Alerts für Barcode + Batch
+      parameters:
+      - name: barcode
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: batchId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Array von Alerts
+  /alerts/id/{id}:
+    get:
+      tags:
+      - Alerts
+      summary: Alert per ID
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Alert Objekt
+        '404':
+          description: Nicht gefunden
+  /alerts/source/retailer:
+    get:
+      tags:
+      - Alerts
+      summary: Alle aktiven Retailer-Alerts (source = retailer)
+      parameters:
+      - name: includeExpired
+        in: query
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Array von Retailer-Alerts
+  /alerts/source/community:
+    get:
+      tags:
+      - Alerts
+      summary: Alle aktiven Community-Alerts (source = community)
+      parameters:
+      - name: includeExpired
+        in: query
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Array von Community-Alerts
+  /alerts:
+    post:
+      tags:
+      - Alerts
+      summary: Alert erstellen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlertCreateRequest'
+      responses:
+        '201':
+          description: Alert erstellt
+  /alerts/{id}:
+    patch:
+      tags:
+      - Alerts
+      summary: Alert aktualisieren
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                status: resolved
+      responses:
+        '200':
+          description: Alert aktualisiert
+    delete:
+      tags:
+      - Alerts
+      summary: Alert löschen
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Gelöscht
+  /alerts/{id}/confirm:
+    post:
+      tags:
+      - Alerts
+      summary: Alert bestätigen (confirmationCount +1)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Alert bestätigt
+  /alerts/{id}/reject:
+    post:
+      tags:
+      - Alerts
+      summary: Alert ablehnen (rejectionCount +1)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Alert abgelehnt
+  /products/{barcode}:
+    get:
+      tags:
+      - Products
+      summary: Produkt aus OpenFoodFacts Cache
+      description: 'Gibt Produktdaten zurück. Erst aus MongoDB-Cache, dann von OFF
+        API. Cache TTL: 24h.'
+      parameters:
+      - name: barcode
+        in: path
+        required: true
+        schema:
+          type: string
+        example: '5449000000996'
+      responses:
+        '200':
+          description: Produktdaten + X-Data-Source Header (cache | off)
+        '404':
+          description: Produkt nicht gefunden (in OFF)
+  /scan-history:
+    get:
+      tags:
+      - Scan History
+      summary: Eigenen Scan-Verlauf abrufen
+      responses:
+        '200':
+          description: Array von Scan-Einträgen
+    post:
+      tags:
+      - Scan History
+      summary: Scan-Eintrag erstellen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScanHistoryCreateRequest'
+      responses:
+        '201':
+          description: Eintrag erstellt
+    delete:
+      tags:
+      - Scan History
+      summary: Gesamten Scan-Verlauf löschen
+      responses:
+        '204':
+          description: Verlauf gelöscht
+  /scan-history/{id}:
+    get:
+      tags:
+      - Scan History
+      summary: Scan-Eintrag per ID
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Scan-Eintrag
+        '404':
+          description: Nicht gefunden
+    patch:
+      tags:
+      - Scan History
+      summary: Scan-Eintrag aktualisieren
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                productStatus: mhdSoonExpiring
+      responses:
+        '200':
+          description: Eintrag aktualisiert
+    delete:
+      tags:
+      - Scan History
+      summary: Einzelnen Scan-Eintrag löschen
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Gelöscht
+  /users/me:
+    get:
+      tags:
+      - Users
+      summary: Eigenes Profil abrufen
+      responses:
+        '200':
+          description: User-Profil
+    patch:
+      tags:
+      - Users
+      summary: Eigenes Profil aktualisieren
+      description: email, password, refreshToken sind gesperrt
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                fullName: Max Muster Updated
+                nickname: maxm_updated
+      responses:
+        '200':
+          description: Profil aktualisiert
+    delete:
+      tags:
+      - Users
+      summary: Eigenen Account löschen
+      responses:
+        '204':
+          description: Account gelöscht
+  /users/me/avatar:
+    patch:
+      tags:
+      - Users
+      summary: Avatar-URL setzen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - avatarUrl
+              properties:
+                avatarUrl:
+                  type: string
+                  example: https://example.com/avatar.jpg
+      responses:
+        '200':
+          description: Avatar aktualisiert
+  /users/me/messages:
+    get:
+      tags:
+      - Users
+      summary: Denormalisierte Meldungshistorie aus User-Dokument
+      description: Gibt messages[] Summary direkt aus dem User-Dokument zurück (schneller
+        als /user-messages)
+      responses:
+        '200':
+          description: Array von Message-Summaries
+  /users/{id}:
+    get:
+      tags:
+      - Users
+      summary: User per ID (Admin)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: User-Profil
+        '404':
+          description: Nicht gefunden
+  /user-messages:
+    get:
+      tags:
+      - User Messages
+      summary: Eigene Meldungen abrufen
+      responses:
+        '200':
+          description: Array von Meldungen
+    post:
+      tags:
+      - User Messages
+      summary: Neue Meldung erstellen
+      description: authorId und authorNickname werden automatisch aus dem Token gesetzt.
+        Meldung wird in users.messages[] denormalisiert.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserMessageCreateRequest'
+      responses:
+        '201':
+          description: Meldung erstellt
+  /user-messages/{id}:
+    get:
+      tags:
+      - User Messages
+      summary: Einzelne Meldung abrufen (nur eigene)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Meldung
+        '403':
+          description: Fremde Meldung
+        '404':
+          description: Nicht gefunden
+    delete:
+      tags:
+      - User Messages
+      summary: Meldung löschen (aus DB + users.messages[])
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Gelöscht
+  /user-messages/{id}/status:
+    patch:
+      tags:
+      - User Messages
+      summary: Submission-Status aktualisieren
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - submissionStatus
+              properties:
+                submissionStatus:
+                  type: string
+                  enum:
+                  - pending
+                  - submitted
+                  - accepted
+                  - rejected
+      responses:
+        '200':
+          description: Status aktualisiert
+  /user-messages/barcode/{barcode}:
+    get:
+      tags:
+      - User Messages
+      summary: Alle Meldungen zu einem Produkt (Admin/Moderation)
+      parameters:
+      - name: barcode
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Array von Meldungen
+  /retailers/me:
+    get:
+      tags:
+      - Retailers
+      summary: Eigenes Retailer-Profil
+      responses:
+        '200':
+          description: Retailer-Profil
+    patch:
+      tags:
+      - Retailers
+      summary: Profil aktualisieren (email, password gesperrt)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                companyName: Migros AG Updated
+      responses:
+        '200':
+          description: Profil aktualisiert
+    delete:
+      tags:
+      - Retailers
+      summary: Account löschen
+      responses:
+        '204':
+          description: Account gelöscht
+  /retailers/me/logo:
+    patch:
+      tags:
+      - Retailers
+      summary: Logo-URL setzen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - logoUrl
+              properties:
+                logoUrl:
+                  type: string
+                  example: https://example.com/logo.png
+      responses:
+        '200':
+          description: Logo aktualisiert
+  /retailers/{id}:
+    get:
+      tags:
+      - Retailers
+      summary: Retailer per ID (Admin)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retailer-Profil
+        '404':
+          description: Nicht gefunden
+  /intelligence/health:
+    get:
+      tags:
+      - Intelligence
+      summary: ML-Service Health Check
+      responses:
+        '200':
+          description: ML-Service läuft
+        '503':
+          description: ML-Service nicht erreichbar
+  /intelligence/analyze/{barcode}:
+    post:
+      tags:
+      - Intelligence
+      summary: Trace analysieren — ML Anomalie-Erkennung
+      description: 'Holt Trace aus MongoDB, flattet alle 99 Felder und sendet sie
+        an den ML-Service. Gibt trace + product + intelligence zurück. Graceful degradation:
+        falls ML-Service offline, wird intelligence=null zurückgegeben.'
+      parameters:
+      - name: barcode
+        in: path
+        required: true
+        schema:
+          type: string
+        example: '5449000000996'
+      - name: batchId
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Optional — filtert nach Charge
+      responses:
+        '200':
+          description: Analyse-Ergebnis
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      trace:
+                        type: object
+                      product:
+                        type: object
+                        nullable: true
+                      intelligence:
+                        type: object
+                        nullable: true
+                        properties:
+                          batchId:
+                            type: string
+                          riskScore:
+                            type: integer
+                            minimum: 0
+                            maximum: 100
+                          riskLevel:
+                            type: string
+                            enum:
+                            - low
+                            - medium
+                            - high
+                            - critical
+                          recommendation:
+                            type: string
+                            enum:
+                            - approve
+                            - inspect
+                            - quarantine
+                            - do_not_sell
+                          anomalies:
+                            type: array
+                          sustainability:
+                            type: object
+                          summary:
+                            type: string
+        '404':
+          description: Trace nicht gefunden
+  /intelligence/chat/{barcode}:
+    post:
+      tags:
+      - Intelligence
+      summary: AI-Chat über Produkt und Batch (Streaming)
+      description: Streaming-Endpoint. Gibt text/plain Stream zurück. LLM antwortet
+        automatisch in der Sprache der Frage (DE → DE, EN → EN).
+      parameters:
+      - name: barcode
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: Streaming text/plain Antwort
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: chatHistory oder batchContext fehlt
