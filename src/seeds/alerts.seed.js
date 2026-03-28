@@ -1,133 +1,145 @@
 import mongoose from "mongoose";
-import { USER_IDS } from "./user.seed.js";
-import { RETAILER_IDS } from "./retailers.seed.js";
-import { TRACE_IDS } from "./trace.seed.js";
 import { PRODUCT_BARCODES } from "./constants.seed.js";
 
 export const ALERT_IDS = {
-  lindtRecall:     new mongoose.Types.ObjectId("64a1b2c3d4e5f6a7b8c9b001"),
-  cocaColaQuality: new mongoose.Types.ObjectId("64a1b2c3d4e5f6a7b8c9b002"),
-  milchRetailer:   new mongoose.Types.ObjectId("64a1b2c3d4e5f6a7b8c9b003"),
-  ovoCommunity:    new mongoose.Types.ObjectId("64a1b2c3d4e5f6a7b8c9b004"),
+  blvRecallLindt:    new mongoose.Types.ObjectId("64a1b2c3d4e5f6a7b8c9b001"),
+  migrosQuality:     new mongoose.Types.ObjectId("64a1b2c3d4e5f6a7b8c9b002"),
+  infoOvomaltine:    new mongoose.Types.ObjectId("64a1b2c3d4e5f6a7b8c9b003"),
+  communityMilch:    new mongoose.Types.ObjectId("64a1b2c3d4e5f6a7b8c9b004"),
+  communityElTony:   new mongoose.Types.ObjectId("64a1b2c3d4e5f6a7b8c9b005"),
 };
 
 export async function seedAlerts(traces, users) {
   const db = mongoose.connection.db;
 
+  const elTonyTrace = traces.find(t => t.barcode === PRODUCT_BARCODES.elTonyMate);
+  const lindtTrace  = traces.find(t => t.barcode === PRODUCT_BARCODES.lindt85);
+
   const alerts = [
-    // ── 1. Offizieller Rückruf Lindt ─────────────────────────────
+    // ── Alert 1: BLV Rückruf Lindt ────────────────────────────────
     {
-      _id:              ALERT_IDS.lindtRecall,
-      barcode:          PRODUCT_BARCODES.lindt85,
-      batchId:          "LINDT-85-2026-0201",
-      source:           "official",
-      category:         "recall",
-      severity:         "high",
-      title:            "Rückruf: Lindt Excellence 85% — mögliche Fremdkörper",
-      description:      "Das Bundesamt für Lebensmittelsicherheit (BLV) hat Lindt & Sprüngli aufgefordert, die Charge LINDT-85-2026-0201 zurückzurufen. Bei Stichprobenkontrollen wurden in vereinzelten Tafeln Metallsplitter nachgewiesen, die beim Reinigungsprozess des Conchierers abgelöst wurden. Betroffen ist ausschliesslich die Charge 2026-0201 mit Mindesthaltbarkeitsdatum 01.2028.",
-      actionRequired:   "Produkt nicht konsumieren. Rückgabe in jeder Lindt-Verkaufsstelle oder via Post an Lindt & Sprüngli AG, Seestrasse 204, 8802 Kilchberg. Vollständige Erstattung wird gewährt.",
-      referenceId:      "BLV-2026-0312-RC001",
-      moreInfoUrl:      "https://www.blv.admin.ch/rueckrufe/2026/lindt-excellence-85",
-      authorId:         null,
-      authorNickname:   null,
-      authorAvatarUrl:  null,
-      authorLogoUrl:    "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Lindt_chocolate_logo.svg/200px-Lindt_chocolate_logo.svg.png",
-      retailerId:       null,
-      status:           "active",
-      confirmationCount:12,
-      rejectionCount:   1,
-      createdAt:        new Date("2026-03-12T10:00:00Z"),
-      updatedAt:        new Date("2026-03-14T08:00:00Z"),
-      expiresAt:        null,
-    },
-
-    // ── 2. Qualitätswarnung Coca-Cola vom Retailer (Migros) ───────
-    {
-      _id:             ALERT_IDS.cocaColaQuality,
-      barcode:         PRODUCT_BARCODES.cocaCola,
-      batchId:         "CC-CH-2026-0312",
-      source:          "retailer",
-      category:        "quality",
-      severity:        "medium",
-      title:           "Qualitätshinweis: Coca-Cola 500ml — abweichender Geschmack",
-      description:     "Unsere Qualitätskontrolle hat bei vereinzelten Flaschen der Charge CC-CH-2026-0312 einen leicht abweichenden Geschmack festgestellt. Es besteht kein Gesundheitsrisiko. Die Produkte werden vorsorglich aus dem Regal genommen und zurückgesandt.",
-      actionRequired:  "Produkt kann zurückgegeben werden. Bon oder Kassenzettel nicht erforderlich.",
-      referenceId:     "MIGROS-QC-2026-0315",
-      moreInfoUrl:     null,
-      authorId:        null,
-      authorNickname:  null,
-      authorAvatarUrl: null,
-      authorLogoUrl:   "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Migros_Logo.svg/200px-Migros_Logo.svg.png",
-      retailerId:      RETAILER_IDS.migros,
-      status:          "active",
-      confirmationCount: 4,
+      _id:               ALERT_IDS.blvRecallLindt,
+      barcode:           PRODUCT_BARCODES.lindt85,
+      batchId:           "LINDT-85-2026-0201",
+      source:            "official",
+      category:          "recall",
+      severity:          "high",
+      title:             "Rückruf: Lindt Excellence 85% — erhöhter Cadmiumgehalt",
+      description:       "Das Bundesamt für Lebensmittelsicherheit hat einen Rückruf für die Charge LINDT-85-2026-0201 ausgesprochen. Cadmiumgehalt 0.28mg/kg — innerhalb EU-Grenzwert, jedoch über Tomapo-Schwellenwert.",
+      actionRequired:    "Produkt nicht konsumieren. Zurückgeben an Verkaufsstelle.",
+      referenceId:       "BLV-2026-0215-004",
+      moreInfoUrl:       "https://www.blv.admin.ch/rueckrufe/2026/lindt-cadmium",
+      status:            "active",
+      confirmationCount: 12,
       rejectionCount:    2,
-      createdAt:       new Date("2026-03-15T14:00:00Z"),
-      updatedAt:       new Date("2026-03-16T09:00:00Z"),
-      expiresAt:       new Date("2026-04-15T00:00:00Z"),
+      expiresAt:         new Date("2026-12-31T00:00:00Z"),
+      createdAt:         new Date("2026-02-15T10:00:00Z"),
+      updatedAt:         new Date("2026-02-15T10:00:00Z"),
     },
 
-    // ── 3. Retailer-Alert Migros Milch ─────────────────────────
+    // ── Alert 2: Migros Qualitätswarnung ──────────────────────────
     {
-      _id:             ALERT_IDS.milchRetailer,
-      barcode:         PRODUCT_BARCODES.migrosMilch,
-      batchId:         null,
-      source:          "retailer",
-      category:        "information",
-      severity:        "low",
-      title:           "Info: M-Classic Vollmilch — neue Verpackung ab April 2026",
-      description:     "Ab April 2026 erscheint die M-Classic Vollmilch in einer neuen Tetra Pak Verpackung aus 80% recyceltem Karton. Der Inhalt und das Produkt bleiben unverändert. Die neue Verpackung trägt das FSC-Zertifizierungssiegel.",
-      actionRequired:  null,
-      referenceId:     "MIGROS-INFO-2026-003",
-      moreInfoUrl:     "https://www.migros.ch/nachhaltigkeit/verpackung",
-      authorId:        null,
-      authorNickname:  null,
-      authorAvatarUrl: null,
-      authorLogoUrl:   "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Migros_Logo.svg/200px-Migros_Logo.svg.png",
-      retailerId:      RETAILER_IDS.migros,
-      status:          "active",
+      _id:               ALERT_IDS.migrosQuality,
+      barcode:           PRODUCT_BARCODES.migrosMilch,
+      batchId:           null,
+      source:            "retailer",
+      category:          "quality",
+      severity:          "medium",
+      title:             "Qualitätshinweis: Migros Vollmilch — verkürzte Haltbarkeit",
+      description:       "Aufgrund eines Kühlkettenproblems bei der Lieferung kann die Haltbarkeit einzelner Chargen verkürzt sein. Bitte MHD prüfen.",
+      actionRequired:    "MHD überprüfen. Bei Unsicherheit Produkt nicht konsumieren.",
+      referenceId:       "MGR-QA-2026-0318",
+      moreInfoUrl:       null,
+      status:            "active",
+      confirmationCount: 5,
+      rejectionCount:    1,
+      expiresAt:         new Date("2026-04-01T00:00:00Z"),
+      createdAt:         new Date("2026-03-18T08:00:00Z"),
+      updatedAt:         new Date("2026-03-18T08:00:00Z"),
+    },
+
+    // ── Alert 3: Info Ovomaltine ───────────────────────────────────
+    {
+      _id:               ALERT_IDS.infoOvomaltine,
+      barcode:           PRODUCT_BARCODES.ovomaltine,
+      batchId:           null,
+      source:            "official",
+      category:          "information",
+      severity:          "low",
+      title:             "Information: Ovomaltine — neue Rezeptur ab Q2 2026",
+      description:       "Ab April 2026 wird die Rezeptur leicht angepasst. Zuckergehalt wird um 8% reduziert. Geschmack und Nährwertprofil bleiben weitgehend gleich.",
+      actionRequired:    null,
+      referenceId:       "WANDER-PR-2026-001",
+      moreInfoUrl:       "https://www.ovomaltine.ch/news/rezeptur-2026",
+      status:            "active",
       confirmationCount: 0,
       rejectionCount:    0,
-      createdAt:       new Date("2026-03-18T11:00:00Z"),
-      updatedAt:       new Date("2026-03-18T11:00:00Z"),
-      expiresAt:       new Date("2026-05-01T00:00:00Z"),
+      expiresAt:         new Date("2026-06-30T00:00:00Z"),
+      createdAt:         new Date("2026-03-01T09:00:00Z"),
+      updatedAt:         new Date("2026-03-01T09:00:00Z"),
     },
 
-    // ── 4. Community-Alert von User zu Ovomaltine ─────────────────
+    // ── Alert 4: Community Milch ──────────────────────────────────
     {
-      _id:             ALERT_IDS.ovoCommunity,
-      barcode:         PRODUCT_BARCODES.ovomaltine,
-      batchId:         "OVO-2026-0301",
-      source:          "community",
-      category:        "quality",
-      severity:        "low",
-      title:           "Community: Ovomaltine — Klumpen im Pulver",
-      description:     "Habe heute eine frische Dose Ovomaltine geöffnet (Charge OVO-2026-0301, MHD 08/2027). Das Pulver enthält grössere Klumpen, die sich auch beim Rühren nicht auflösen. Könnte auf ein Feuchtigkeitsproblem beim Abfüllen oder Transport hinweisen.",
-      actionRequired:  null,
-      referenceId:     null,
-      moreInfoUrl:     null,
-      authorId:        USER_IDS.laraSchmid,
-      authorNickname:  "laras",
-      authorAvatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=laras",
-      authorLogoUrl:   null,
-      retailerId:      null,
-      status:          "active",
+      _id:               ALERT_IDS.communityMilch,
+      barcode:           PRODUCT_BARCODES.migrosMilch,
+      batchId:           "MILCH-2026-0320",
+      source:            "community",
+      category:          "quality",
+      severity:          "low",
+      title:             "Community: Milch riecht leicht säuerlich",
+      description:       "Mehrere User berichten, dass die Charge MILCH-2026-0320 bereits beim Öffnen leicht säuerlich riecht, obwohl MHD noch 5 Tage entfernt.",
+      actionRequired:    "Bei auffälligem Geruch nicht konsumieren.",
+      referenceId:       null,
+      moreInfoUrl:       null,
+      status:            "active",
+      confirmationCount: 8,
+      rejectionCount:    3,
+      expiresAt:         new Date("2026-03-31T00:00:00Z"),
+      createdAt:         new Date("2026-03-21T14:00:00Z"),
+      updatedAt:         new Date("2026-03-21T14:00:00Z"),
+    },
+
+    // ── Alert 5: Community El Tony Mate ───────────────────────────
+    {
+      _id:               ALERT_IDS.communityElTony,
+      barcode:           PRODUCT_BARCODES.elTonyMate,
+      batchId:           "L250634716:41",
+      source:            "community",
+      category:          "quality",
+      severity:          "low",
+      title:             "Community: El Tony Mate — Flasche undicht",
+      description:       "Einzelne User aus der Charge L250634716:41 berichten von leicht undichten Verschlüssen. Kein Gesundheitsrisiko, aber Qualitätsmangel.",
+      actionRequired:    "Verschluss vor dem Kauf prüfen.",
+      referenceId:       null,
+      moreInfoUrl:       null,
+      status:            "active",
       confirmationCount: 3,
       rejectionCount:    1,
-      createdAt:       new Date("2026-03-20T19:30:00Z"),
-      updatedAt:       new Date("2026-03-21T10:00:00Z"),
-      expiresAt:       new Date("2026-06-20T00:00:00Z"),
+      expiresAt:         new Date("2025-12-31T00:00:00Z"),
+      createdAt:         new Date("2025-06-10T11:00:00Z"),
+      updatedAt:         new Date("2025-06-10T11:00:00Z"),
     },
   ];
 
   await db.collection("alerts").insertMany(alerts);
-
-  // AlertId in Lindt-Trace eintragen
-  await db.collection("traces").updateOne(
-    { _id: TRACE_IDS.lindt },
-    { $push: { alertIds: ALERT_IDS.lindtRecall } }
-  );
-
   console.log(`   ✓ Alerts: ${alerts.length} inserted`);
+
+  // alertIds in Traces zurückschreiben
+  if (lindtTrace) {
+    await db.collection("traces").updateOne(
+      { _id: lindtTrace._id },
+      { $set: { alertIds: [ALERT_IDS.blvRecallLindt] } }
+    );
+    console.log("   ✓ Lindt trace alertIds synced");
+  }
+  if (elTonyTrace) {
+    await db.collection("traces").updateOne(
+      { _id: elTonyTrace._id },
+      { $set: { alertIds: [ALERT_IDS.communityElTony] } }
+    );
+    console.log("   ✓ El Tony Mate trace alertIds synced");
+  }
+
   return alerts;
 }
