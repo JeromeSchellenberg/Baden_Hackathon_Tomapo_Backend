@@ -6,17 +6,17 @@ import bcrypt from "bcryptjs";
 const userMessageSummarySchema = new mongoose.Schema(
   {
     id: { type: String, required: true, note: "= user_messages._id" },
-    barcode: { type: String, required: true },
+    barcode: { type: String },
     batchId: { type: String, default: null },
     productName: { type: String, default: null },
     productBrand: { type: String, default: null },
     productCategoryTag: { type: String, default: null },
-    messageTitle: { type: String, required: true },
-    messageCategory: { type: String, required: true },
-    messageSeverity: { type: String, required: true },
-    submissionStatus: { type: String, required: true },
-    createdAt: { type: Date, required: true },
-    updatedAt: { type: Date, required: true },
+    messageTitle: { type: String },
+    messageCategory: { type: String},
+    messageSeverity: { type: String},
+    submissionStatus: { type: String },
+    createdAt: { type: Date},
+    updatedAt: { type: Date},
   },
   { _id: false }
 );

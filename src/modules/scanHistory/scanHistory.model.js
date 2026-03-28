@@ -5,18 +5,15 @@ const scanHistorySchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
       index: true,
     },
     barcode: {
       type: String,
-      required: true,
       index: true,
       trim: true,
     },
     barcodeType: {
       type: String,
-      required: true,
       trim: true,
     },
     batchId: {
@@ -57,7 +54,6 @@ const scanHistorySchema = new mongoose.Schema(
     },
     productStatus: {
       type: String,
-      required: true,
       enum: ["ok", "recallActive", "mhdExpired", "mhdSoonExpiring", "unknown"],
       default: "unknown",
     },
@@ -67,7 +63,6 @@ const scanHistorySchema = new mongoose.Schema(
     },
     scannedAt: {
       type: Date,
-      required: true,
       index: true,
       default: Date.now,
     },
