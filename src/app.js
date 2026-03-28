@@ -10,6 +10,7 @@ import alertRoutes from "./modules/alert/alert.routes.js";
 import userRoutes from "./modules/user/user.routes.js";
 import retailerRoutes from "./modules/retailer/retailer.routes.js";
 import userMessageRoutes from "./modules/userMessages/userMessages.routes.js";
+import intelligenceRoutes from "./modules/intelligence/intelligence.routes.js";
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use("/api/v1/alerts", alertRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/retailers", retailerRoutes);
 app.use("/api/v1/user-messages", userMessageRoutes);
+app.use("/api/v1/intelligence",  intelligenceRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
