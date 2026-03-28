@@ -3,6 +3,8 @@ import {
   getAlertsByBarcode,
   getAlertsByBarcodeAndBatch,
   getAlertById,
+  getRetailerAlerts,
+  getCommunityAlerts,
   createAlert,
   updateAlert,
   deleteAlert,
@@ -17,6 +19,9 @@ const router = Router();
 router.get("/:barcode", protect, getAlertsByBarcode);
 router.get("/:barcode/batch/:batchId", protect, getAlertsByBarcodeAndBatch);
 router.get("/id/:id", protect, getAlertById);
+router.get("/source/retailer",  protect, getRetailerAlerts);
+router.get("/source/community", protect, getCommunityAlerts);
+ 
 
 // Intern / moderation / admin
 router.post("/", protect, createAlert);

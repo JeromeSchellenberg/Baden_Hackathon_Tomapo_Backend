@@ -36,6 +36,22 @@ export const getAlertById = asyncHandler(async (req, res) => {
   sendSuccess(res, alert);
 });
 
+// GET /api/v1/alerts/source/retailer
+export const getRetailerAlerts = asyncHandler(async (req, res) => {
+  const alerts = await AlertService.getRetailerAlerts({
+    includeExpired: req.query.includeExpired === "true",
+  });
+  sendSuccess(res, alerts);
+});
+
+// GET /api/v1/alerts/source/community
+export const getCommunityAlerts = asyncHandler(async (req, res) => {
+  const alerts = await AlertService.getCommunityAlerts({
+    includeExpired: req.query.includeExpired === "true",
+  });
+  sendSuccess(res, alerts);
+});
+
 // POST /api/v1/alerts
 export const createAlert = asyncHandler(async (req, res) => {
   const alert = await AlertService.createAlert(req.body);

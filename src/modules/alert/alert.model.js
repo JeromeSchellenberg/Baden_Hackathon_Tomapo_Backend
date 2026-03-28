@@ -36,12 +36,10 @@ const alertSchema = new mongoose.Schema(
     },
     title: {
       type: String,
-      required: true,
       trim: true,
     },
     description: {
       type: String,
-      required: true,
       trim: true,
     },
     actionRequired: {
@@ -90,7 +88,6 @@ const alertSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      required: true,
       enum: ALERT_STATUSES,
       default: "active",
       index: true,
@@ -98,13 +95,11 @@ const alertSchema = new mongoose.Schema(
 
     confirmationCount: {
       type: Number,
-      required: true,
       default: 0,
       min: 0,
     },
     rejectionCount: {
       type: Number,
-      required: true,
       default: 0,
       min: 0,
     },

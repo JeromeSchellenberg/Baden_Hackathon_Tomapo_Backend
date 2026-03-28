@@ -88,6 +88,30 @@ export const getAlertById = async (id) => {
   return alert;
 };
 
+// GET all retailer alerts (source === "retailer")
+export const getRetailerAlerts = async (options = {}) => {
+  const { includeExpired = false } = options;
+
+  const query = { source: "retailer" };
+  const finalQuery = includeExpired ? query : buildActiveQuery(query);
+
+  return Alert.find(finalQuery)
+    .sort({ createdAt: -1 })
+    .lean();
+};
+
+// GET all community alerts (source === "community")
+export const getCommunityAlerts = async (options = {}) => {
+  const { includeExpired = false } = options;
+
+  const query = { source: "community" };
+  const finalQuery = includeExpired ? query : buildActiveQuery(query);
+
+  return Alert.find(finalQuery)
+    .sort({ createdAt: -1 })
+    .lean();
+};
+
 // CREATE
 export const createAlert = async (data) => {
   const alert = await Alert.create(data);
