@@ -1,19 +1,22 @@
 import { Router } from "express";
 import {
-    getAllRetailers,
-    getRetailerById,
-    createRetailer,
-    updateRetailer,
-    deleteRetailer,
+  getMe,
+  updateMe,
+  updateLogo,
+  deleteMe,
+  getRetailerById,
 } from "./retailer.controller.js";
-import { protect } from "../../middlewares/auth.middleware.js";
+import { protect, authorize } from "../../middlewares/auth.middleware.js";
 
 const router = Router();
 
-router.get("/", protect, getAllRetailers);
+// ── Eigenes Profil — nur für eingeloggte Retailer ─────────────────
+router.get("/me", protect, authorize("retailer"), getMe);
+router.patch("/me", protect, authorize("retailer"), updateMe);
+router.patch("/me/logo", protect, authorize("retailer"), updateLogo);
+router.delete("/me", protect, authorize("retailer"), deleteMe);
+
+// ── Admin / intern ────────────────────────────────────────────────
 router.get("/:id", protect, getRetailerById);
-router.post("/", protect, createRetailer);
-router.patch("/:id", protect, updateRetailer);
-router.delete("/:id", protect, deleteRetailer);
 
 export default router;

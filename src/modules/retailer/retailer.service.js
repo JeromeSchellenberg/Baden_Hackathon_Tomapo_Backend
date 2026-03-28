@@ -1,58 +1,53 @@
 import Retailer from "./retailer.model.js";
 import { AppError } from "../../utils/appError.util.js";
 
-export const getAllRetailers = async () => {
-    return Retailer.find().select("-refreshToken").lean();
+// ─── GET aktueller Retailer (aus Token) ──────────────────────────
+
+export const getMe = async (retailerId) => {
+  const retailer = await Retailer.findById(retailerId).lean();
+  if (!retailer) throw new AppError("Retailer not found", 404);
+  return retailer;
 };
+
+// ─── GET Retailer by ID (Admin / intern) ─────────────────────────
 
 export const getRetailerById = async (id) => {
-    const retailer = await Retailer.findById(id).select("-refreshToken").lean();
-
-    if (!retailer) {
-        throw new AppError("Retailer not found", 404);
-    }
-
-    return retailer;
+  const retailer = await Retailer.findById(id).lean();
+  if (!retailer) throw new AppError("Retailer not found", 404);
+  return retailer;
 };
 
-export const createRetailer = async (data) => {
-    const existingRetailer = await Retailer.findOne({ email: data.email });
+// ─── UPDATE eigenes Profil ────────────────────────────────────────
 
-    if (existingRetailer) {
-        throw new AppError("A retailer with this email already exists", 409);
-    }
+export const updateMe = async (retailerId, data) => {
+  // Sensible Felder dürfen hier nicht geändert werden
+  const forbidden = ["password", "refreshToken", "email"];
+  forbidden.forEach((f) => delete data[f]);
 
-    const retailer = await Retailer.create(data);
+  const retailer = await Retailer.findByIdAndUpdate(retailerId, data, {
+    new: true,
+    runValidators: true,
+  }).lean();
 
-    return {
-        id: retailer._id,
-        companyName: retailer.companyName,
-        email: retailer.email,
-        logoUrl: retailer.logoUrl,
-        createdAt: retailer.createdAt,
-        updatedAt: retailer.updatedAt,
-    };
+  if (!retailer) throw new AppError("Retailer not found", 404);
+  return retailer;
 };
 
-export const updateRetailer = async (id, data) => {
-    const retailer = await Retailer.findByIdAndUpdate(id, data, {
-        new: true,
-        runValidators: true,
-    })
-        .select("-refreshToken")
-        .lean();
+// ─── UPDATE Logo ──────────────────────────────────────────────────
 
-    if (!retailer) {
-        throw new AppError("Retailer not found", 404);
-    }
-
-    return retailer;
+export const updateLogo = async (retailerId, logoUrl) => {
+  const retailer = await Retailer.findByIdAndUpdate(
+    retailerId,
+    { logoUrl },
+    { new: true }
+  ).lean();
+  if (!retailer) throw new AppError("Retailer not found", 404);
+  return retailer;
 };
 
-export const deleteRetailer = async (id) => {
-    const retailer = await Retailer.findByIdAndDelete(id);
+// ─── DELETE eigenen Account ───────────────────────────────────────
 
-    if (!retailer) {
-        throw new AppError("Retailer not found", 404);
-    }
+export const deleteMe = async (retailerId) => {
+  const retailer = await Retailer.findByIdAndDelete(retailerId);
+  if (!retailer) throw new AppError("Retailer not found", 404);
 };
