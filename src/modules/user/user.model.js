@@ -45,10 +45,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// ─── Indexes ──────────────────────────────────────────────────────
-userSchema.index({ email: 1 }, { unique: true });
-userSchema.index({ nickname: 1 }, { unique: true });
-
 // ─── Hooks ───────────────────────────────────────────────────────
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
