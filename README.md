@@ -180,4 +180,4 @@ Das System unterscheidet zwei Rollen:
 - **user** — Endnutzer (Swift App)
 - **retailer** — Detailhändler (Web-Frontend)
 
-Beide erhalten beim Login ein Access Token (15min) und ein Refresh Token (30d). Über `POST /auth/refresh` kann das Access Token erneuert werden.
+Beide erhalten beim Login ein Access Token (5h) und ein Refresh Token (30d). Über `POST /auth/refresh` kann das Access Token erneuert werden.
